@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -13,22 +14,35 @@ type Response struct {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	
-	w.Header().Set("Content-Type", "application/json")
+	// CORS headers for all methods
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
+	// Handle OPTIONS method for preflight requests (CORS)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
+	// Set Content-Type header to JSON
+	w.Header().Set("Content-Type", "application/json")
+
+	// Prepare the response data
 	response := Response{
 		Email:    "chiamaevans10@gmail.com",
 		Datetime: time.Now().Format(time.RFC3339),
 		Github:   "https://github.com/evans_sudo/PublicApi",
 	}
 
-	json.NewEncoder(w).Encode(response)
-	
+	// Encode the response as JSON
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, fmt.Sprintf("Error encoding JSON: %v", err), http.StatusInternalServerError)
+	}
 }
 
 func main() {
 	http.HandleFunc("/api/info", handler)
+	fmt.Println("Server is running on http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }
