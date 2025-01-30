@@ -16,14 +16,8 @@ type Response struct {
 func handler(w http.ResponseWriter, r *http.Request) {
 	// CORS headers for all methods
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	// Handle OPTIONS method for preflight requests (CORS)
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
 
 	// Set Content-Type header to JSON
 	w.Header().Set("Content-Type", "application/json")
@@ -32,7 +26,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	response := Response{
 		Email:    "chiamaevans10@gmail.com",
 		Datetime: time.Now().Format(time.RFC3339),
-		Github:   "https://github.com/evans_sudo/PublicApi",
+		Github:   "https://github.com/evans-sudo/PublicApi",
 	}
 
 	// Encode the response as JSON
@@ -40,6 +34,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Error encoding JSON: %v", err), http.StatusInternalServerError)
 	}
 }
+
 
 func main() {
 	http.HandleFunc("/api/info", handler)
